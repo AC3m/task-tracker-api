@@ -1,0 +1,24 @@
+{
+  "name": "task-tracker-api",
+  "version": "1.0.0",
+  "main": "dist/app.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "concurrently \"tsc --watch\" \"node --watch ./dist/app.js --env-file=.env\"",
+    "start": "npm run build && node ./dist/app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.5",
+    "concurrently": "^9.2.1",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3"
+  }
+}
