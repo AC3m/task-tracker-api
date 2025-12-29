@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "concurrently \"tsc --watch\" \"node --watch ./dist/app.js --env-file=.env\"",
-    "start": "npm run build && node ./dist/app.js"
+    "start": "node ./dist/app.js"
   },
   "keywords": [],
   "author": "",

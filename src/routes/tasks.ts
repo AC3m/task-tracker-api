@@ -27,6 +27,19 @@ router.get('/', (req, res) => {
   res.status(200).json(taskList);
 });
 
+router.get('/:id', (req, res, next) => {
+  const { id } = req.params;
+  const task = taskList.find((task) => task.id === +id);
+  if (!task) {
+    const error = new Error(
+      `A task with the id of ${id} was not found`,
+    ) as CustomError;
+    error.status = 404;
+    return next(error);
+  }
+  res.status(200).json(task);
+});
+
 router.post('/', (req, res, next) => {
   const { task } = req.body;
   const newTask = {
