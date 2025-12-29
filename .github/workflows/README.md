@@ -30,12 +30,6 @@ This directory contains CI/CD workflows for the task-tracker-api project with co
 - Builds for multiple platforms (linux/amd64, linux/arm64)
 - Uses GitHub Actions cache for faster builds
 
-#### Security
-
-- Runs Trivy vulnerability scanner on the Docker image
-- Uploads security results to GitHub Security tab
-- Only runs on push events (not PRs)
-
 ### 2. Release Workflow (`release.yml`)
 
 **Triggers:**
@@ -63,12 +57,6 @@ This directory contains CI/CD workflows for the task-tracker-api project with co
 - Container startup verification
 - Health check capability (commented out, ready to enable)
 - Log inspection on failure
-
-### Security
-
-- **Trivy Scanning**: Vulnerability detection in dependencies and base images
-- **SBOM Generation**: Complete software inventory for compliance
-- **SARIF Upload**: Integration with GitHub Security tab
 
 ### Registry
 
@@ -220,10 +208,6 @@ Settings → Actions → General → Allow all actions
 
 Check that `packages: write` permission is granted in the workflow (already configured).
 
-### Security Scan Fails
-
-This is informational. Review the Security tab to see vulnerabilities. Update dependencies or base images to fix.
-
 ### Cache Not Working
 
 GitHub Actions cache is automatic. If builds are slow, verify:
@@ -236,7 +220,6 @@ GitHub Actions cache is automatic. If builds are slow, verify:
 ✅ **Multi-stage builds** - Smaller final images  
 ✅ **Layer caching** - Faster rebuilds  
 ✅ **Multi-platform builds** - Works on Apple Silicon and x86  
-✅ **Security scanning** - Automated vulnerability detection  
 ✅ **Semantic versioning** - Proper release tagging  
 ✅ **SBOM generation** - Software supply chain transparency  
 ✅ **Least privilege** - Non-root user in container  
@@ -256,4 +239,3 @@ GitHub Actions cache is automatic. If builds are slow, verify:
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - [Docker Build Push Action](https://github.com/docker/build-push-action)
 - [GitHub Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
-- [Trivy Security Scanner](https://github.com/aquasecurity/trivy)

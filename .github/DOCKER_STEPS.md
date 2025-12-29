@@ -118,42 +118,6 @@ Your GitHub Actions workflows include comprehensive Docker integration for build
 - Works on ARM servers
 - Reuses cache from previous build
 
-### 7. **Security Scanning**
-
-```yaml
-- name: Run Trivy vulnerability scanner
-  uses: aquasecurity/trivy-action@master
-  with:
-    image-ref: ghcr.io/${{ github.repository }}:${{ github.sha }}
-    format: 'sarif'
-    output: 'trivy-results.sarif'
-```
-
-**Purpose:** Scan for vulnerabilities
-
-- Checks base image (node:23.11.0-alpine)
-- Checks npm dependencies
-- Uploads results to GitHub Security tab
-- Scans OS packages
-
-### 8. **SBOM Generation** (Release only)
-
-```yaml
-- name: Generate SBOM
-  uses: aquasecurity/trivy-action@master
-  with:
-    image-ref: ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
-    format: 'cyclonedx'
-    output: 'sbom.json'
-```
-
-**Purpose:** Create Software Bill of Materials
-
-- Lists all components in your image
-- Compliance and auditing
-- Supply chain security
-- Attached to GitHub releases
-
 ## Image Naming Convention
 
 Your images follow this pattern:
