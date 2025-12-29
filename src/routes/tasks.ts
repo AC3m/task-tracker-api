@@ -21,9 +21,14 @@ const taskList: TaskList[] = [
 ];
 
 //TO DO: Add controllers
-//TO DO: Support query param filtering done items
 
 router.get('/', (req, res) => {
+  if (req.query.done) {
+    const doneTasks = taskList.filter(
+      (task) => task.done === (req.query.done === 'true'),
+    );
+    return res.status(200).json(doneTasks);
+  }
   res.status(200).json(taskList);
 });
 
