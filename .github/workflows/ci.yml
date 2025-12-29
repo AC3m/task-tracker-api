@@ -3,8 +3,6 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
 
 env:
   REGISTRY: ghcr.io
@@ -117,12 +115,10 @@ jobs:
 
       - name: Push Docker image
         if: github.event_name != 'pull_request'
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          platforms: linux/amd64,linux/arm64
+        run: |
+          echo "${{ steps.meta.outputs.tags }}" | while read -r tag; do
+            if [ -n "$tag" ]; then
+              echo "Pushing image tag: $tag"
+              docker push "$tag"
+            fi
+          done
