@@ -7,12 +7,14 @@ This directory contains CI/CD workflows for the task-tracker-api project with co
 ### 1. CI/CD Pipeline (`ci.yml`)
 
 **Triggers:**
+
 - Push to `main` or `develop` branches
 - Pull requests to `main` or `develop` branches
 
 **Jobs:**
 
 #### Build and Test
+
 - Sets up Node.js environment
 - Installs dependencies with npm ci
 - Runs Prettier code formatting checks
@@ -20,6 +22,7 @@ This directory contains CI/CD workflows for the task-tracker-api project with co
 - Uploads build artifacts
 
 #### Docker
+
 - Builds Docker image using multi-stage Dockerfile
 - Tests the Docker container (starts and verifies it runs)
 - Pushes image to GitHub Container Registry (ghcr.io)
@@ -27,18 +30,15 @@ This directory contains CI/CD workflows for the task-tracker-api project with co
 - Builds for multiple platforms (linux/amd64, linux/arm64)
 - Uses GitHub Actions cache for faster builds
 
-#### Security
-- Runs Trivy vulnerability scanner on the Docker image
-- Uploads security results to GitHub Security tab
-- Only runs on push events (not PRs)
-
 ### 2. Release Workflow (`release.yml`)
 
 **Triggers:**
+
 - GitHub Release publication
 - Manual workflow dispatch with version input
 
 **Features:**
+
 - Creates semantic version tags (v1.0.0, v1.0, v1, latest)
 - Builds multi-platform Docker images
 - Generates Software Bill of Materials (SBOM)
@@ -47,21 +47,19 @@ This directory contains CI/CD workflows for the task-tracker-api project with co
 ## Docker Steps Included
 
 ### Build Optimization
+
 - **Docker Buildx**: Multi-platform builds (AMD64 + ARM64)
 - **Layer Caching**: GitHub Actions cache for faster rebuilds
 - **Multi-stage Build**: Your Dockerfile already uses this for smaller images
 
 ### Testing
+
 - Container startup verification
 - Health check capability (commented out, ready to enable)
 - Log inspection on failure
 
-### Security
-- **Trivy Scanning**: Vulnerability detection in dependencies and base images
-- **SBOM Generation**: Complete software inventory for compliance
-- **SARIF Upload**: Integration with GitHub Security tab
-
 ### Registry
+
 - **GitHub Container Registry**: Free for public repos, included with GitHub
 - **Automatic Authentication**: Uses GITHUB_TOKEN
 - **Smart Tagging**: Branch names, SHAs, semantic versions
@@ -89,12 +87,14 @@ git push origin main
 ### 4. Access Your Docker Images
 
 After successful builds, your images will be available at:
+
 ```
 ghcr.io/<your-username>/task-tracker-api:latest
 ghcr.io/<your-username>/task-tracker-api:main-<sha>
 ```
 
 To pull and run:
+
 ```bash
 docker pull ghcr.io/<your-username>/task-tracker-api:latest
 docker run -p 8000:8000 ghcr.io/<your-username>/task-tracker-api:latest
@@ -105,11 +105,13 @@ docker run -p 8000:8000 ghcr.io/<your-username>/task-tracker-api:latest
 To trigger the release workflow:
 
 **Option A: GitHub UI**
+
 1. Go to Releases → Draft a new release
 2. Create a new tag (e.g., v1.0.0)
 3. Publish release
 
 **Option B: Command Line**
+
 ```bash
 git tag v1.0.0
 git push origin v1.0.0
@@ -145,6 +147,7 @@ To use Docker Hub instead of ghcr.io:
    - `DOCKERHUB_TOKEN`
 
 2. Update the workflows:
+
 ```yaml
 env:
   REGISTRY: docker.io
@@ -152,6 +155,7 @@ env:
 ```
 
 3. Update login action:
+
 ```yaml
 - name: Log in to Docker Hub
   uses: docker/login-action@v3
@@ -204,13 +208,10 @@ Settings → Actions → General → Allow all actions
 
 Check that `packages: write` permission is granted in the workflow (already configured).
 
-### Security Scan Fails
-
-This is informational. Review the Security tab to see vulnerabilities. Update dependencies or base images to fix.
-
 ### Cache Not Working
 
 GitHub Actions cache is automatic. If builds are slow, verify:
+
 - Cache keys are consistent
 - Layer order in Dockerfile is optimized
 
@@ -219,11 +220,10 @@ GitHub Actions cache is automatic. If builds are slow, verify:
 ✅ **Multi-stage builds** - Smaller final images  
 ✅ **Layer caching** - Faster rebuilds  
 ✅ **Multi-platform builds** - Works on Apple Silicon and x86  
-✅ **Security scanning** - Automated vulnerability detection  
 ✅ **Semantic versioning** - Proper release tagging  
 ✅ **SBOM generation** - Software supply chain transparency  
 ✅ **Least privilege** - Non-root user in container  
-✅ **Dependency caching** - npm cache for faster installs  
+✅ **Dependency caching** - npm cache for faster installs
 
 ## Next Steps
 
@@ -239,4 +239,3 @@ GitHub Actions cache is automatic. If builds are slow, verify:
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - [Docker Build Push Action](https://github.com/docker/build-push-action)
 - [GitHub Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
-- [Trivy Security Scanner](https://github.com/aquasecurity/trivy)

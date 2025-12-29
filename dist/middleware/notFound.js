@@ -1,6 +1,6 @@
 const notFound = (_req, _res, next) => {
-    const error = new Error('Not Found');
-    error.status = 404;
-    next(error);
+  const error = new Error('Not Found');
+  error.status = 404;
+  next(error);
 };
 export default notFound;
