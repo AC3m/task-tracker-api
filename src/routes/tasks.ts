@@ -34,8 +34,6 @@ router.get('/:id', async (req, res, next) => {
       task: doc.data()?.task,
       done: doc.data()?.done,
       createdAt: doc.data()?.createdAt,
-
-
     });
   } catch (error) {
     next(error);
@@ -68,26 +66,26 @@ router.post('/', async (req, res, next) => {
 
 router.put('/:id', async (req, res, next) => {
   try {
-  const { id } = req.params;
-  const taskRef = taskCollection.doc(id);
-  const doc = await taskRef.get();
-  if (!doc.exists) {
-    const error = new Error(
-      `A task with the id of ${id} was not found`,
-    ) as CustomError;
-    error.status = 404;
-    return next(error);
-  }
-  const currentData = doc.data();
-  const newStatus = !currentData?.done;
+    const { id } = req.params;
+    const taskRef = taskCollection.doc(id);
+    const doc = await taskRef.get();
+    if (!doc.exists) {
+      const error = new Error(
+        `A task with the id of ${id} was not found`,
+      ) as CustomError;
+      error.status = 404;
+      return next(error);
+    }
+    const currentData = doc.data();
+    const newStatus = !currentData?.done;
 
-  await taskRef.update({done: newStatus});
-  res.status(200).json({
-    id: doc.id,
-    ...currentData,
-    done:newStatus
-  })
-}catch (error) {
+    await taskRef.update({ done: newStatus });
+    res.status(200).json({
+      id: doc.id,
+      ...currentData,
+      done: newStatus,
+    });
+  } catch (error) {
     next(error);
   }
 });
