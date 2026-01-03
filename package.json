@@ -5,20 +5,25 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "dev": "concurrently \"tsc --watch\" \"node --watch ./dist/app.js --env-file=.env\"",
-    "start": "node ./dist/app.js"
+    "dev": "tsx watch src/app.ts",
+    "start": "node ./dist/app.js",
+    "seed": "tsx ./scripts/seed.ts",
+    "prettier": "prettier --write ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "firebase-admin": "^13.6.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.5",
     "concurrently": "^9.2.1",
+    "dotenv": "^17.2.3",
     "prettier": "^3.6.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

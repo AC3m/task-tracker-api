@@ -1,96 +1,112 @@
 import express from 'express';
 import { CustomError } from '../middleware/error.js';
+import { db } from '../config/db.js';
 
 const router = express.Router();
 
-interface TaskList {
-  id: number;
-  task: string;
-  done: boolean;
-  createAt?: DateConstructor;
-}
-
-// TODO: Introduce DB OR storing in JSON
-
-const taskList: TaskList[] = [
-  { id: 1, task: 'Complete homework', done: false },
-  { id: 2, task: 'Go to the gym', done: false },
-  { id: 3, task: 'Walk the dog', done: false },
-  { id: 4, task: 'Do laundry', done: false },
-  { id: 5, task: 'Buy groceries', done: false },
-];
+const taskCollection = db.collection('tasks');
 
 //TO DO: Add controllers
 
-router.get('/', (req, res) => {
-  if (req.query.done) {
-    const doneTasks = taskList.filter(
-      (task) => task.done === (req.query.done === 'true'),
-    );
-    return res.status(200).json(doneTasks);
+router.get('/', async (req, res, next) => {
+  try {
+    const snapshot = await taskCollection.get();
+    const tasks = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    res.status(200).json(tasks);
+  } catch (error) {
+    next(error);
   }
-  res.status(200).json(taskList);
 });
 
-router.get('/:id', (req, res, next) => {
-  const { id } = req.params;
-  const task = taskList.find((task) => task.id === +id);
-  if (!task) {
-    const error = new Error(
-      `A task with the id of ${id} was not found`,
-    ) as CustomError;
-    error.status = 404;
-    return next(error);
+router.get('/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const doc = await taskCollection.doc(id).get();
+    if (!doc.exists) {
+      const error = new Error(
+        `A task with the id of ${id} was not found`,
+      ) as CustomError;
+      error.status = 404;
+      return next(error);
+    }
+    res.status(200).json({
+      id: doc.id,
+      task: doc.data()?.task,
+      done: doc.data()?.done,
+      createdAt: doc.data()?.createdAt,
+
+
+    });
+  } catch (error) {
+    next(error);
   }
-  res.status(200).json(task);
 });
 
-router.post('/', (req, res, next) => {
+router.post('/', async (req, res, next) => {
   const { task } = req.body;
-  const newTask = {
-    id: taskList.length + 1,
-    task: task,
-    done: false,
-    createdAt: new Date(),
-  };
   if (!task) {
     const error = new Error('Bad Request') as CustomError;
     error.status = 400;
     next(error);
   }
-  taskList.push(newTask);
-  res.status(201).json(taskList);
+
+  try {
+    const snapshot = await taskCollection.get();
+    const newId = (snapshot.size + 1).toString();
+    const newTask = {
+      task,
+      done: false,
+      createdAt: new Date(),
+    };
+
+    await taskCollection.doc(newId).set(newTask);
+    res.status(201).json({ id: newId, ...newTask });
+  } catch (error) {
+    next(error);
+  }
 });
 
-router.put('/:id', (req, res, next) => {
+router.put('/:id', async (req, res, next) => {
+  try {
   const { id } = req.params;
-  const task = taskList.find((task) => task.id === +id);
-  if (!task) {
+  const taskRef = taskCollection.doc(id);
+  const doc = await taskRef.get();
+  if (!doc.exists) {
     const error = new Error(
       `A task with the id of ${id} was not found`,
     ) as CustomError;
     error.status = 404;
     return next(error);
   }
+  const currentData = doc.data();
+  const newStatus = !currentData?.done;
 
-  task.done = !task.done;
-
-  res.status(200).json(taskList);
-});
-
-router.delete('/:id', (req, res, next) => {
-  const { id: paramId } = req.params;
-  const task = taskList.find((task) => task.id === +paramId);
-  if (!task) {
-    // const error = { error: `A task with the id of ${paramId} was not found` };
-    const error = new Error(
-      `A task with the id of ${paramId} was not found`,
-    ) as CustomError;
-    error.status = 404;
-    return next(error);
+  await taskRef.update({done: newStatus});
+  res.status(200).json({
+    id: doc.id,
+    ...currentData,
+    done:newStatus
+  })
+}catch (error) {
+    next(error);
   }
-  const updatedTaskList = taskList.filter((task) => task.id !== +paramId);
-  res.status(200).json(updatedTaskList);
 });
+
+// TODO: Refactor delete route to use Firestore
+
+// router.delete('/:id', (req, res, next) => {
+//   const { id: paramId } = req.params;
+//   const task = taskList.find((task) => task.id === +paramId);
+//   if (!task) {
+//     // const error = { error: `A task with the id of ${paramId} was not found` };
+//     const error = new Error(
+//       `A task with the id of ${paramId} was not found`,
+//     ) as CustomError;
+//     error.status = 404;
+//     return next(error);
+//   }
+//   const updatedTaskList = taskList.filter((task) => task.id !== +paramId);
+//   res.status(200).json(updatedTaskList);
+// });
 
 export default router;
