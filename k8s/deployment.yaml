@@ -16,6 +16,21 @@ spec:
     spec:
       containers:
         - name: nodeserver
-          image: ghcr.io/ac3m/task-tracker-api:latest
+          image: us-central1-docker.pkg.dev/project-d2b86bb4-a00b-4f30-9f0/task-tracker-api:latest
           ports:
             - containerPort: 8000
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: FIREBASE_SERVICE_ACCOUNT
+              valueFrom:
+                secretKeyRef:
+                  name: firebase-sa
+                  key: service-account
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
