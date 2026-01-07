@@ -18,3 +18,5 @@ admin.initializeApp({
 });
 
 export const db = admin.firestore();
+
+export const taskCollection = db.collection('tasks');

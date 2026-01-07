@@ -1,8 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-
-export interface CustomError extends Error {
-  status?: number;
-}
+import { CustomError } from '../config/types.js';
 
 const errorHandler = (
   err: CustomError,
