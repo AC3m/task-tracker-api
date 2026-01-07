@@ -95,16 +95,33 @@ jobs:
           IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
 
           # Create ConfigMap/Secret for Firebase Service Account
+          echo "Creating Firebase Service Account secret..."
           kubectl delete secret firebase-sa --ignore-not-found
           kubectl create secret generic firebase-sa \
             --from-literal=service-account="${FIREBASE_SERVICE_ACCOUNT}"
 
+          echo "Verifying secret creation..."
+          kubectl get secret firebase-sa
+
           # Update deployment with new image
+          echo "Updating deployment with image: ${IMAGE_TAG}"
           kubectl set image deployment/task-tracker-api-deployment \
             nodeserver=${IMAGE_TAG}
 
-          # Wait for rollout to complete
-          kubectl rollout status deployment/task-tracker-api-deployment
+          # Wait for rollout to complete with timeout
+          echo "Waiting for deployment rollout..."
+          if ! kubectl rollout status deployment/task-tracker-api-deployment --timeout=5m; then
+            echo "❌ Deployment failed or timed out. Debugging info:"
+            echo "=== Pod Status ==="
+            kubectl get pods -l app=task-tracker-api
+            echo "=== Pod Describe ==="
+            kubectl describe pods -l app=task-tracker-api
+            echo "=== Recent Pod Logs ==="
+            kubectl logs -l app=task-tracker-api --tail=100 --all-containers=true || true
+            exit 1
+          fi
+
+          echo "✅ Deployment successful"
 
           # Get service status
           kubectl get service task-tracker-api-service
