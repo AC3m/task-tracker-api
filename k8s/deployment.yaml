@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: nodeserver
-          image: us-central1-docker.pkg.dev/project-d2b86bb4-a00b-4f30-9f0/task-tracker-api:latest
+          image: us-central1-docker.pkg.dev/project-d2b86bb4-a00b-4f30-9f0/task-tracker-api/task-tracker-api:latest
           ports:
             - containerPort: 8000
           env:
