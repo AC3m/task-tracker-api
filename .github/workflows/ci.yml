@@ -86,12 +86,16 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Test Docker image
+        env:
+          PROD: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           # Get the first tag from the metadata
           IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
 
           # Run the container in detached mode
-          docker run -d --name test-container -p 8000:8000 $IMAGE_TAG
+          docker run -d --name test-container -p 8000:8000 \
+            -e FIREBASE_SERVICE_ACCOUNT="${FIREBASE_SERVICE_ACCOUNT}" \
+            $IMAGE_TAG
 
           # Wait for the container to be healthy
           echo "Waiting for container to start..."
