@@ -103,10 +103,13 @@ jobs:
           echo "Verifying secret creation..."
           kubectl get secret firebase-sa
 
-          # Update deployment with new image
-          echo "Updating deployment with image: ${IMAGE_TAG}"
-          kubectl set image deployment/task-tracker-api-deployment \
-            nodeserver=${IMAGE_TAG}
+          # Update deployment manifest with new image tag
+          echo "Updating deployment manifest with image: ${IMAGE_TAG}"
+          sed -i "s|image:.*|image: ${IMAGE_TAG}|g" k8s/deployment.yaml
+
+          # Apply the full deployment manifest
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
 
           # Wait for rollout to complete with timeout
           echo "Waiting for deployment rollout..."
