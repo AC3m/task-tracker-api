@@ -36,6 +36,8 @@ jobs:
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
+        with:
+          install_components: 'gke-gcloud-auth-plugin'
 
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker ${{ env.REGISTRY }}
@@ -82,6 +84,8 @@ jobs:
           gcloud container clusters get-credentials ${{ env.GKE_CLUSTER }} \
             --zone ${{ env.GKE_ZONE }} \
             --project ${{ env.GCP_PROJECT_ID }}
+        env:
+          USE_GKE_GCLOUD_AUTH_PLUGIN: 'True'
 
       - name: Deploy to GKE
         env:
