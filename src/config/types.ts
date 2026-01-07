@@ -2,7 +2,7 @@ export interface Task {
   id?: string;
   task: string;
   done?: boolean;
-  createdAt?: Date;
+  createdAt?: string;
 }
 
 export interface GetTaskDto {

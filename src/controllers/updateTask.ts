@@ -26,14 +26,14 @@ export const updateTask: RequestHandler<
     }
     const currentData = taskData.data() as Task;
     const newStatus = !currentData?.done;
+    console.log('currentData:', typeof currentData.createdAt);
 
     await taskRef.update({ done: newStatus });
     const response: TaskResponse = {
       id: taskData.id,
       task: currentData.task,
       done: newStatus,
-      createdAt:
-        currentData.createdAt?.toISOString() || new Date().toISOString(),
+      createdAt: currentData.createdAt,
     };
     res.status(200).json(response);
   } catch (error) {

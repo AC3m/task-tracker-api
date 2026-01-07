@@ -21,18 +21,16 @@ export const createTask: RequestHandler<
       next(error);
     }
 
-    const snapshot = await taskCollection.get();
-    const newId = (snapshot.size + 1).toString();
     const newTaskData = {
       task,
       done: false,
       createdAt: new Date().toISOString(),
     };
 
-    await taskCollection.doc(newId).set(newTaskData);
+    const docRef = await taskCollection.add(newTaskData);
 
     const response = {
-      id: newId,
+      id: docRef.id,
       task: newTaskData.task,
       done: newTaskData.done,
       createdAt: newTaskData.createdAt,
